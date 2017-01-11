@@ -9,4 +9,4 @@ how it works
 
 Demo
 ----------------
-[demo @ plunker](http://plnkr.co/edit/TnffNy6WRp2UgY2ixgrc?p=info)
+[demo @ plunker](http://plnkr.co/edit/j71Uhg?p=info)
