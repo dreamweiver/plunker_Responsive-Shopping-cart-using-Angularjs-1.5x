@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html ng-app="myCart">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shopping Cart module</title>
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <link rel="stylesheet" href="style.css" />
+    <script data-require="angular.js@1.5.x" src="https://code.angularjs.org/1.5.8/angular.js" data-semver="1.5.8"></script>
+    <script src="app.js"></script>
+    <script src="cartService.js"></script>
+    <script src="cartCtrl.js"></script>
+  </head>
+
+  <body ng-controller="CartCtrl" id="container">
+    <div class="table container-margin">
+      <div class="row" id="title">
+        <div class="normal-view data divider-bottom">
+           <div class="">
+              <h1>Your Shopping Bag</h1>
+          </div>
+        </div>
+        <div class="small-device-view thick-divider-bottom spacing">
+          <div class="data col8 align-left">
+              Your Shopping Bag
+          </div>
+          <div class="data col2 align-right" >
+            {{totalItems}} ITEMS
+          </div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="normal-view table thick-divider-bottom spacing">
+            <div class="row ">
+
+                <div class="data col7 align-left" > {{totalItems}} ITEMS</div>
+                <div class="data col1">SIZE</div>
+                <div class="data col1">QTY</div>
+                <div class="data col1">PRICE</div>
+
+            </div>
+          </div>
+        </div>
+      <div class="row" ng-repeat="prod in prods" >
+        <div class="table" ng-class="{'thick-divider-bottom':$last,'divider-bottom':!$last}">
+          <div class="row " >
+            <div class="data col3 align-left">
+            <img ng-src={{prod.p_img}} alt="prod.p_name"/>
+            
+            </div>
+            <div class="data col7 valign-middle">
+              <div class="table">
+                <div class="row prod-spec">
+                  <div class="data col6 align-left">
+                    <div class="uppercase">{{prod.p_variation}}  {{prod.p_name}}</div>
+                    <div class="dim">Style #: {{prod.p_style}}</div>
+                    <div class="dim">Color: {{prod.p_selected_color.name}} </div>
+                    <div class="dim small-device-view uppercase">Size: {{prod.p_selected_size.code}}</div>
+                    <div class="small-device-view spacing">QTY:<input type="text" class="qty" size="1" ng-model="prod.p_quantity" ng-change="reCalculate(prod.p_quantity,$index)"/></div>
+                    <div class="small-device-view spacing big-font"><span>{{prod.c_currency}}</span><span ng-bind="prod.p_quantity * prod.p_price"></span></div>
+                  </div>
+                  <div class="normal-view data col1 uppercase">{{prod.p_selected_size.code}}</div>
+                  <div class="normal-view data col1"><input type="text" class="qty" size="1" ng-model="prod.p_quantity" ng-change="reCalculate(prod.p_quantity,$index)"/></div>
+                  <div class="normal-view data col2" ><span>{{prod.c_currency}}</span><span ng-bind="prod.p_quantity * prod.p_price"></span></div>
+                </div>
+                <div class="row normal-view">
+                  <div class="dim data col5 align-left">EDIT | X Remove | Save For Later</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="small-device-view row spacing">
+            <div class="dim data col10 align-left">EDIT | X Remove | Save For Later</div>
+          </div>
+        </div>
+        <div class= "normal-view" ng-if="$last">
+         <div id="left-section">
+           <p><b>Need help or have questions?</b></p>
+           <p>Call Customer Service <br/>
+           at 1-800-555-5555</p>
+           <p><a href="#">Chat with one of our stylists</a></p>
+           <p><a href="#">See return & Exchange Policy</a></p>
+         </div>
+         <div id="right-section" class="container-margin">
+           <div class="table ">
+             <div class="row promo-code spacing">
+               <div class="data col4 align-left ">
+                 Enter Promotion code or Gift Card
+               </div>
+               <div class="data col4">
+                 <input type="text" placeholder="code" ng-model="code" />
+               </div>
+               <div class="data col2">
+                 <button class="btn" ng-click="applyCode(code)">APPLY</button>
+               </div>
+             </div>
+             <div class="row spacing"> 
+                <div class="data col4 align-left ">
+                  <p>SUBTOTAL</p>
+                </div>
+                <div class="data col4 ">
+                </div>
+                <div class="data col4" ng-bind="'$' + subTotal">
+                </div>
+             </div>
+             <div class="row spacing"> 
+                <div class="data col4 align-left ">
+                  <p ng-show="discount > 0">PROMOTION CODE <b>{{code}}</b> APPLIED</p>
+                  <p ng-show="discount === 0">NO PROMOTION CODE APPLIED</p>
+                </div>
+                <div class="data col4 ">
+                </div>
+                <div class="data col4" ng-bind="'-$'+ discount">
+                </div>
+             </div>
+             <div class="row divider-bottom spacing"> 
+                <div class="data col4 align-left ">
+                  <p>ESTIMATED SHIPPING*</p>
+                  <p>You Qualify for for Free shipping,<br/>
+                  because your order is over $50*</p>
+                </div>
+                <div class="data col4 ">
+                </div>
+                <div class="data col4 ">
+                  FREE
+                </div>
+             </div>
+             <div class="row thick-divider-bottom spacing"> 
+                <div class="data col4 align-left ">
+                  <p>ESTIMATED TOTAL</p>
+                  <p>Tax will be applied during checkout</p>
+                </div>
+                <div class="data col4 ">
+                </div>
+                <div class="data col4" ng-bind="'$' + estTotal">
+                </div>
+             </div>
+             <div class="row spacing"> 
+                <div class="data col4">
+                </div>
+                <div class="data col4 ">
+                  <a href="#">CONTINUE SHOPPING</a>
+                </div>
+                <div class="data col4 ">
+                  <input type="button" value="CHECKOUT" class="btn"/>
+                </div>
+             </div>
+           </div>
+           <p class="align-right">
+             <img src="http://imgur.com/bqcZgOZ.jpeg" alt="secure-checkout">Secure checkout.
+             Shopping is always safe and secure
+           </p>
+         </div>
+        </div>
+        <div class="small-device-view " ng-if="$last">
+          <div class="table ">
+            <div class="row ">
+              <div class="data big-font extra-spacing">ENTER PROMOTION CODE OR GIFT CARD</div>
+            </div>
+            <div class="row data extra-spacing">
+              <input type="text" placeholder="code" ng-model="code" />&nbsp;&nbsp;
+              <button class="btn" ng-click="applyCode(code)">APPLY</button>
+            </div>
+          </div>
+          
+          <div class="table ">
+             <div class="row extra-spacing"> 
+                <div class="data col6 align-left ">
+                  <p>SUBTOTAL</p>
+                </div>
+                <div class="data col4" ng-bind="'$' + subTotal">
+                </div>
+             </div>
+             <div class="row extra-spacing"> 
+                <div class="data col6 align-left ">
+                  <p ng-show="discount > 0">PROMOTION CODE <b>{{code}}</b> APPLIED</p>
+                  <p ng-show="discount === 0">NO PROMOTION CODE APPLIED</p>
+                </div>
+                <div class="data col4" ng-bind="'-$'+ discount">
+                </div>
+             </div>
+             <div class="row divider-bottom extra-spacing"> 
+                <div class="data col6 align-left ">
+                  <p>ESTIMATED SHIPPING*<br/>
+                  <span class="dim">You Qualify for for Free shipping,<br/>
+                  because your order is over $50*</span> </p>
+                </div>
+                <div class="data col4 ">
+                  FREE
+                </div>
+             </div>
+             <div class="row  spacing"> 
+                <div class="data col6 align-left ">
+                  <p>ESTIMATED TOTAL<br/>
+                  <span class="dim">Tax will be applied during checkout</span></p>
+                </div>
+                <div class="data col4" ng-bind="'$' + estTotal">
+                </div>
+             </div>
+            </div>
+            <div class="table">
+             <div class="row extra-spacing"> 
+                <div class="data col4 ">
+                  <input  type="button" value="CHECKOUT" class="btn"/>
+                </div>
+             </div>
+             <div class="row extra-spacing">
+                <div class="data col10 ">
+                  <a href="#">CONTINUE SHOPPING</a>
+                </div>
+             </div>
+             <div class="row extra-spacing">
+                <div class="data col10 ">
+                  <p>Secure checkout.
+             Shopping is always safe and secure</p>
+                </div>
+             </div>
+             <div class="row">
+                <div class="data col10 ">
+                  <img src="http://imgur.com/bqcZgOZ.jpeg" alt="secure-checkout">
+                </div>
+             </div>
+            </div>
+           
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
